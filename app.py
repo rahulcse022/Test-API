@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, request
+import requests
+
 
 # creating a Flask app
 app = Flask(__name__)
@@ -8,7 +10,7 @@ app = Flask(__name__)
 def home():
     if (request.method == 'GET'):
 
-        data = {
+        testData = {
             "data1": "D1",
             "data2": "D2",
             "data3": "D3",
@@ -16,15 +18,13 @@ def home():
             "data5": 2,
             "data6": 3
         }
-        return jsonify(data)
 
-
-@app.route('/home/<int:num>', methods=['GET'])
-def disp(num):
-
-    return jsonify({'data': num**2})
+        data = requests.get(
+            'https://api.thingspeak.com/channels/1832660/feeds.json').json()['feeds']
+        length_of_Data = len(data)
+        return jsonify({'data': data[length_of_Data-1], 'testdata': testData})
 
 
 # driver function
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True)
